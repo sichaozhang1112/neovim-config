@@ -45,6 +45,13 @@ return {
 			{
 				"<leader>/",
 				function()
+					Snacks.picker.lines()
+				end,
+				desc = "Buffer Fuzzy Search",
+			},
+			{
+				"<leader>f/",
+				function()
 					Snacks.picker.grep()
 				end,
 				desc = "Grep",
