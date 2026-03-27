@@ -1,13 +1,11 @@
 return {
-	{ "bluz71/vim-nightfly-colors", name = "nightfly", lazy = false, priority = 1000 },
 	{
-		"bluz71/vim-moonfly-colors",
-		name = "moonfly",
+		"shaunsingh/oxocarbon.nvim",
+		name = "oxocarbon",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			-- Lua initialization file
-			vim.cmd([[colorscheme moonfly]])
+			vim.cmd([[colorscheme oxocarbon]])
 		end,
 	},
 }

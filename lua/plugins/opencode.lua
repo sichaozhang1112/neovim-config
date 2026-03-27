@@ -52,11 +52,16 @@ return {
 			local aug = vim.api.nvim_create_augroup("OpencodeAutoClose", { clear = true })
 			vim.api.nvim_create_autocmd("VimLeavePre", {
 				group = aug,
-				callback = function()
-					local ok, opencode = pcall(require, "opencode")
-					if not ok or type(opencode) ~= "table" then
-						return
-					end
+		callback = function()
+			local events_ok, events = pcall(require, "opencode.events")
+			if not events_ok or not events.connected_server then
+				return
+			end
+
+			local ok, opencode = pcall(require, "opencode")
+			if not ok or type(opencode) ~= "table" then
+				return
+			end
 
 					-- Helper to safely call functions on the module if they exist.
 					-- Accept either a function reference or a key name on the module.
