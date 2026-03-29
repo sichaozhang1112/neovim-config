@@ -40,6 +40,19 @@ luacheck . --std lua52
 nvim --headless -u init.lua -c 'quit'
 ```
 
+- Quick binary verification (optional)
+
+```sh
+# Verify common external binaries used by the config (mermaid, imagemagick, tex, tree-sitter, lazygit, ghostscript):
+# You can also run this check from inside Neovim if the `opencode` plugin is loaded:
+# lua require('opencode.verify').check()
+command -v mmdc || echo "mmdc (mermaid-cli) missing"
+command -v magick || command -v convert || echo "ImageMagick missing (magick/convert)"
+command -v pdflatex || echo "pdflatex (TeX) missing"
+command -v tree-sitter || echo "tree-sitter CLI missing (required for building parsers)"
+command -v lazygit || echo "lazygit missing"
+```
+
 - Run a single Lua test (busted)
 
 ```sh

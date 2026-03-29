@@ -15,6 +15,11 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local site_path = vim.fn.stdpath("data") .. "/site"
+if not vim.tbl_contains(vim.opt.rtp:get(), site_path) then
+	vim.opt.rtp:append(site_path)
+end
+
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
