@@ -10,6 +10,33 @@ return {
 			explorer = { enabled = true },
 			indent = { enabled = true },
 			input = { enabled = true },
+			image = {
+				enabled = true,
+				force = true,
+				doc = {
+					inline = false,
+					float = true,
+					max_width = 60,
+					max_height = 20,
+				},
+				convert = {
+					notify = true,
+					magick = {
+						default = { "{src}[0]", "-auto-orient", "-strip", "-resize", "1280x1280>" },
+						vector = { "-density", 144, "{src}[{page}]" },
+						pdf = {
+							"-density",
+							144,
+							"{src}[{page}]",
+							"-background",
+							"white",
+							"-alpha",
+							"remove",
+							"-trim",
+						},
+					},
+				},
+			},
 			notifier = {
 				enabled = true,
 				timeout = 3000,

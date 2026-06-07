@@ -8,9 +8,63 @@ return {
 			{ "folke/snacks.nvim", opts = { input = {}, picker = {}, terminal = {} } },
 		},
 		config = function()
+			local function get_non_floating_win()
+				local current = vim.api.nvim_get_current_win()
+				if vim.api.nvim_win_get_config(current).relative == "" then
+					return current
+				end
+
+				for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+					if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_config(win).relative == "" then
+						return win
+					end
+				end
+
+				return nil
+			end
+
+			local function with_non_floating_win(fn)
+				local previous = vim.api.nvim_get_current_win()
+				local target = get_non_floating_win()
+
+				if target and target ~= previous and vim.api.nvim_win_is_valid(target) then
+					vim.api.nvim_set_current_win(target)
+				end
+
+				local ok, err = pcall(fn)
+
+				if vim.api.nvim_win_is_valid(previous) then
+					vim.api.nvim_set_current_win(previous)
+				end
+
+				if not ok then
+					vim.notify(tostring(err), vim.log.levels.ERROR, { title = "opencode" })
+				end
+			end
+
 			---@type opencode.Opts
 			vim.g.opencode_opts = {
-				-- Your configuration, if any — see `lua/opencode/config.lua`, or "goto definition" on the type or field.
+				server = {
+					start = function()
+						with_non_floating_win(function()
+							require("opencode.terminal").open("opencode --port", {
+								split = "right",
+								width = math.floor(vim.o.columns * 0.5),
+							})
+						end)
+					end,
+					stop = function()
+						require("opencode.terminal").close()
+					end,
+					toggle = function()
+						with_non_floating_win(function()
+							require("opencode.terminal").toggle("opencode --port", {
+								split = "right",
+								width = math.floor(vim.o.columns * 0.5),
+							})
+						end)
+					end,
+				},
 			}
 
 			-- Required for `opts.events.reload`.
@@ -52,16 +106,16 @@ return {
 			local aug = vim.api.nvim_create_augroup("OpencodeAutoClose", { clear = true })
 			vim.api.nvim_create_autocmd("VimLeavePre", {
 				group = aug,
-		callback = function()
-			local events_ok, events = pcall(require, "opencode.events")
-			if not events_ok or not events.connected_server then
-				return
-			end
+				callback = function()
+					local events_ok, events = pcall(require, "opencode.events")
+					if not events_ok or not events.connected_server then
+						return
+					end
 
-			local ok, opencode = pcall(require, "opencode")
-			if not ok or type(opencode) ~= "table" then
-				return
-			end
+					local ok, opencode = pcall(require, "opencode")
+					if not ok or type(opencode) ~= "table" then
+						return
+					end
 
 					-- Helper to safely call functions on the module if they exist.
 					-- Accept either a function reference or a key name on the module.
